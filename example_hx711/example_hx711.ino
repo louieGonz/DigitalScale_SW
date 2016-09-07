@@ -10,54 +10,65 @@ void setup() {
   Serial.begin(38400);
   Serial.println("HX711 Demo");
 
-  Serial.println("Before setting up the scale:");
-  Serial.print("read: \t\t");
-  Serial.println(scale.read());     // print a raw reading from the ADC
+  scale.set_scale();          // this value is obtained by calibrating the scale with known weights; see the README for details
+  scale.tare(); 
+  
+  int done=0;
 
-  Serial.print("read average: \t\t");
-  Serial.println(scale.read_average(20));   // print the average of 20 readings from the ADC
+  Serial.println("Place a weight and press (a) when placed");
 
-  Serial.print("get value: \t\t");
-  Serial.println(scale.get_value(5));   // print the average of 5 readings from the ADC minus the tare weight (not set yet)
+  char inputx = ' ';
+  while(done!=1){
+    if(Serial.available() > 0){
+      inputx = Serial.read();
+        if( inputx = 'a')
+          done=1;
+        }
+  }
+  float offset_val=0.0;
+  float scale_val = 0.0;
+  
+  Serial.print("The Offset value is: \t\t");
+  offset_val = scale.get_units(10);
+  Serial.println(offset_val);
 
-  Serial.print("get units: \t\t");
-  Serial.println(scale.get_units(5), 1);  // print the average of 5 readings from the ADC minus tare weight (not set) divided 
-            // by the SCALE parameter (not set yet)  
 
-  scale.set_scale(2280.f);                      // this value is obtained by calibrating the scale with known weights; see the README for details
-  scale.tare();               // reset the scale to 0
+  inputx = ' ';
+  done=0;
+  Serial.println("remove the weight then press p");
+  while(done!=1){
+    if(Serial.available() > 0){
+      inputx = Serial.read();
+        if( inputx = 'p')
+          done=1;
+        }
+  }
 
-  Serial.println("After setting up the scale:");
 
-  Serial.print("read: \t\t");
-  Serial.println(scale.read());                 // print a raw reading from the ADC
+  scale_val = offset_val / 53; // 53 is weight of known item
 
-  Serial.print("read average: \t\t");
-  Serial.println(scale.read_average(20));       // print the average of 20 readings from the ADC
+  scale.set_scale(float(scale_val));
+  scale.tare(); 
 
-  Serial.print("get value: \t\t");
-  Serial.println(scale.get_value(5));   // print the average of 5 readings from the ADC minus the tare weight, set with tare()
-
-  Serial.print("get units: \t\t");
-  Serial.println(scale.get_units(5), 1);        // print the average of 5 readings from the ADC minus tare weight, divided 
-            // by the SCALE parameter set with set_scale
-
+ 
   Serial.println("Readings:");
 }
 
 void loop() {
 
  
-  Serial.print("time: \t"); Serial.print(millis()); Serial.print("\t\t\t");
+  //Serial.print("time: \t"); Serial.print(millis()); Serial.print("\t\t");
 
-  long data_o = scale.read();
-  Serial.print("Reading at: \t");
-  Serial.println(data_o);
+  //unsigned long data_o = scale.read();
   
-  //Serial.print("one reading:\t");
-  //Serial.print(scale.get_units(), 1);
-  //Serial.print("\t| average:\t");
-  //Serial.println(scale.get_units(10), 1);
+  //Serial.print("Reading in Hex: \t");Serial.print(scale.raw_dout, HEX);Serial.print("\t");
+  //Serial.print("Reading In Dec: \t");Serial.println(data_o);
+  
+  
+  Serial.print("one reading:\t");
+  Serial.print(scale.get_units(), 1);
+  Serial.print("\t| average:\t");
+  Serial.println(scale.get_units(10), 1);
 
   //scale.power_down();             // put the ADC in sleep mode
   //delay(5000);

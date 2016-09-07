@@ -5,6 +5,8 @@ HX711::HX711(byte dout, byte pd_sck, byte gain) {
   PD_SCK  = pd_sck;
   DOUT  = dout;
 
+  raw_dout = 0;
+
   pinMode(PD_SCK, OUTPUT);
   pinMode(DOUT, INPUT);
 
@@ -13,6 +15,18 @@ HX711::HX711(byte dout, byte pd_sck, byte gain) {
 
 HX711::~HX711() {
 
+}
+
+void HX711::calibrate(){
+  char inputx=' ';
+  float calibWeight=0.0;
+  char calibFlag=' ';
+
+  serial.println("Enter the weight in grams of calibration weight: \t");
+  while(wait_for_veri){
+    
+    
+  }
 }
 
 bool HX711::is_ready() {
@@ -36,6 +50,9 @@ void HX711::set_gain(byte gain) {
   read();
 }
 
+
+
+
 long HX711::read() {
   // wait for the chip to become ready
   while (!is_ready());
@@ -43,6 +60,7 @@ long HX711::read() {
     unsigned long value = 0;
     byte data[3] = { 0 };
     byte filler = 0x00;
+
 
   // pulse the clock pin 24 times to read the data
     data[2] = shiftIn(DOUT, PD_SCK, MSBFIRST); //shiftIn does 1 byte, so call 3x
@@ -54,6 +72,12 @@ long HX711::read() {
     digitalWrite(PD_SCK, HIGH);
     digitalWrite(PD_SCK, LOW);
   }
+
+
+   raw_dout = ( static_cast<unsigned long> (0x00) << 24
+            | static_cast<unsigned long>(data[2]) << 16
+            | static_cast<unsigned long>(data[1]) << 8
+            | static_cast<unsigned long>(data[0]) );
 
     // Datasheet indicates the value is returned as a two's complement value
     // Flip all the bits

@@ -17,6 +17,8 @@ class HX711
     float SCALE;  // used to return weight in grams, kg, ounces, whatever
 
   public:
+    
+    long readRaw();
     // define clock and data pin, channel, and gain factor
     // channel selection is made by passing the appropriate gain: 128 or 64 for channel A, 32 for channel B
     // gain: 128 or 64 for channel A; channel B works with 32 gain factor only
@@ -37,6 +39,7 @@ class HX711
     // waits for the chip to be ready and returns a reading
     long read();
 
+    long raw_dout;
     // returns an average reading; times = how many times to read
     long read_average(byte times = 10);
 
