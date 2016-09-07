@@ -23,11 +23,58 @@ void HX711::calibrate(){
   char calibFlag=' ';
 
   serial.println("Enter the weight in grams of calibration weight: \t");
+  //wait until get input and is verified
   while(wait_for_veri){
-    
-    
+
+    if(serial.available > 0) 
+      calibWeight = serial.read(); //read calibration weight
+
+    if(calibWeight>1 && calibWeight<2000){
+        serial.print("verify that weight entered is : \t");
+        serial.println(calibWeight);
+
+        while(wait_for_input==0){
+          if(serial.available>0)
+            input_ver = serial.read();
+
+          if(input_ver == 'y'){
+            wait_for_input=FALSE;
+            wait_for_veri=FALSE;  
+          }
+          else if(input_ver=='n'){
+            wait_for_input=FALSE; //exit while loop wait_for_input
+            wait_for_veri=TRUE;   //go while(wait for veri) to try entering again
+          }
+          else
+            serial.println("enter 'y' if correct or 'n' if NOT correct");
+        }      
+    }  
   }
+
+
+  serial.println("place the weight on the scale, then press 'x' ");
+  //wait until they place the weight then
+  while(input!='x'){
+    inputx = serial.read();
+  }
+  
+
+  set_scale();
+  set_tare();
+
+  long xx=0;
+
+  xx=scale.get_units(30);
+
+
+  scale.set(xx / calibWeight);
+  scale.tare();
+
+
+  serial.println("scale is calibrated!");
+
 }
+    
 
 bool HX711::is_ready() {
   return digitalRead(DOUT) == LOW;
