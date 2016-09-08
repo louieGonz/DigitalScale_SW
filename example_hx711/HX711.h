@@ -70,6 +70,8 @@ class HX711
 
     // wakes up the chip after power down mode
     void power_up();
+
+
 };
 
 #endif /* HX711_h */
