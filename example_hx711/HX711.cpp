@@ -1,5 +1,23 @@
 #include <Arduino.h>
 #include <HX711.h>
+#include "FastRunningMedian.h"
+
+
+
+unsigned int value = 0;
+
+FastRunningMedian<unsigned int, 10, 0> newMedian;
+
+
+
+
+typedef struct {
+
+
+
+} scale_vars;
+
+SensorData sensordata;
 
 HX711::HX711(byte dout, byte pd_sck, byte gain) {
   PD_SCK  = pd_sck;
@@ -17,7 +35,7 @@ HX711::~HX711() {
 
 }
 
-    
+
 
 bool HX711::is_ready() {
   return digitalRead(DOUT) == LOW;
@@ -47,15 +65,15 @@ long HX711::read() {
   // wait for the chip to become ready
   while (!is_ready());
 
-    unsigned long value = 0;
-    byte data[3] = { 0 };
-    byte filler = 0x00;
+  unsigned long value = 0;
+  byte data[3] = { 0 };
+  byte filler = 0x00;
 
 
   // pulse the clock pin 24 times to read the data
-    data[2] = shiftIn(DOUT, PD_SCK, MSBFIRST); //shiftIn does 1 byte, so call 3x
-    data[1] = shiftIn(DOUT, PD_SCK, MSBFIRST);
-    data[0] = shiftIn(DOUT, PD_SCK, MSBFIRST);
+  data[2] = shiftIn(DOUT, PD_SCK, MSBFIRST); //shiftIn does 1 byte, so call 3x
+  data[1] = shiftIn(DOUT, PD_SCK, MSBFIRST);
+  data[0] = shiftIn(DOUT, PD_SCK, MSBFIRST);
 
   // set the channel and the gain factor for the next reading using the clock pin
   for (unsigned int i = 0; i < GAIN; i++) {
@@ -64,50 +82,60 @@ long HX711::read() {
   }
 
 
-   raw_dout = ( static_cast<unsigned long> (0x00) << 24
-            | static_cast<unsigned long>(data[2]) << 16
-            | static_cast<unsigned long>(data[1]) << 8
-            | static_cast<unsigned long>(data[0]) );
+  raw_dout = ( static_cast<unsigned long> (0x00) << 24
+               | static_cast<unsigned long>(data[2]) << 16
+               | static_cast<unsigned long>(data[1]) << 8
+               | static_cast<unsigned long>(data[0]) );
 
-    // Datasheet indicates the value is returned as a two's complement value
-    // Flip all the bits
-    data[2] = ~data[2];
-    data[1] = ~data[1];
-    data[0] = ~data[0];
+  // Datasheet indicates the value is returned as a two's complement value
+  // Flip all the bits
+  data[2] = ~data[2];
+  data[1] = ~data[1];
+  data[0] = ~data[0];
 
-    // Replicate the most significant bit to pad out a 32-bit signed integer
-    //if data is negative num
-    if ( data[2] & 0x80 ) {
-        filler = 0xFF;
+  // Replicate the most significant bit to pad out a 32-bit signed integer
+  //if data is negative num
+  if ( data[2] & 0x80 ) {
+    filler = 0xFF;
     // else if data is 0b0111_1111_1111_111 ie highest positive value
-    } else if ((0x7F == data[2]) && (0xFF == data[1]) && (0xFF == data[0])) {
-        filler = 0xFF;
-    //else data is 
-    } else {
-        filler = 0x00;
-    }
+  } else if ((0x7F == data[2]) && (0xFF == data[1]) && (0xFF == data[0])) {
+    filler = 0xFF;
+    //else data is
+  } else {
+    filler = 0x00;
+  }
 
-    // Construct a 32-bit signed integer
-    value = ( static_cast<unsigned long>(filler) << 24
+  // Construct a 32-bit signed integer
+  value = ( static_cast<unsigned long>(filler) << 24
             | static_cast<unsigned long>(data[2]) << 16
             | static_cast<unsigned long>(data[1]) << 8
             | static_cast<unsigned long>(data[0]) );
 
-    // ... and add 1
-    return static_cast<long>(++value);
+  // ... and add 1
+  return static_cast<long>(++value);
 }
 
-long HX711::read_average(byte times) {
+SensorData HX711::read_average(byte times) {
   long sum = 0;
+  long read_out = 0;
+  SensorData sensordata;
   for (byte i = 0; i < times; i++) {
-    
-    sum += read();
+    read_out = read();
+    sum += read_out;
+    newMedian.addValue(read_out);
+
   }
-  return sum / times;
+  sensordata.runningMedian = (newMedian.getMedian() - OFFSET);
+  sensordata.runningMedian = sensordata.runningMedian / SCALE;
+  
+  Serial.print("~~~");Serial.print(sensordata.runningMedian);Serial.print("~~~\t");
+        sensordata.runningAverage = sum /times;
+        return sensordata;
+        //return sum / times;
 }
 
 double HX711::get_value(byte times) {
-  return read_average(times) - OFFSET;
+  return (read_average(times)).runningAverage - OFFSET;
 }
 
 float HX711::get_units(byte times) {
@@ -115,7 +143,7 @@ float HX711::get_units(byte times) {
 }
 
 void HX711::tare(byte times) {
-  double sum = read_average(times);
+  double sum = (read_average(times)).runningAverage;
   set_offset(sum);
 }
 
@@ -123,23 +151,23 @@ void HX711::set_scale(float scale) {
   SCALE = scale;
 }
 
-float HX711::get_scale() {
+  float HX711::get_scale() {
   return SCALE;
 }
 
-void HX711::set_offset(long offset) {
+  void HX711::set_offset(long offset) {
   OFFSET = offset;
 }
 
-long HX711::get_offset() {
+  long HX711::get_offset() {
   return OFFSET;
 }
 
-void HX711::power_down() {
+  void HX711::power_down() {
   digitalWrite(PD_SCK, LOW);
   digitalWrite(PD_SCK, HIGH);
 }
 
-void HX711::power_up() {
+  void HX711::power_up() {
   digitalWrite(PD_SCK, LOW);
 }
