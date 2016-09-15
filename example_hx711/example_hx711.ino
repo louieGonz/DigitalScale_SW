@@ -3,6 +3,7 @@
 #include <EEPROM.h>
 #include <math.h>
 
+
 #define FALSE 0
 #define TRUE 1
 #define WAITING 1
@@ -21,11 +22,15 @@ HX711 scale(A1, A0);    // parameter "gain" is ommited; the default value 128 is
 //function prototype
 
 
+
 long data0=0,data1=0,data2=0;
 
 long currRead,prevRead;
  SensorData scaleAvg, scaleAvg2;
 
+
+
+long currRead = 0, prevRead = 0,data0=0,data1=0,data2=0;
 
 int diff = 0;
 
@@ -54,9 +59,11 @@ unsigned char byte3;
 int wait_for_response;
 char inputt;
 float xx;
+
 float ooh;
 float currWeight=0;
 float prevWeight=0;
+
 
 float scalingFactor;
 
@@ -70,6 +77,7 @@ void setup() {
 
   Serial.println("Scale Demo");
   Serial.println("Do you want to calibrate 'y' or 'n");
+
 
   inputt = ' ';
   wait_for_response = TRUE;
@@ -110,6 +118,47 @@ void setup() {
   state = WEIGHING;
  
 
+
+  inputt = ' ';
+  wait_for_response = TRUE;
+
+
+  byte0 = EEPROM.read(0);
+  byte1 = EEPROM.read(1);
+  byte2 = EEPROM.read(2);
+  byte3 = EEPROM.read(3);
+
+  scalingFactor = byte3 << 24 | byte2 << 16 | byte1 << 8 | byte0;
+  //
+  //  Serial.print("current scaling factor is \t");
+  //  Serial.println((float)scalingFactor);
+
+
+
+  //wait till get input
+  while (wait_for_response) {
+    inputt = Serial.read();
+    if (inputt == 'y') {
+
+      calibrate();
+      wait_for_response = FALSE; //will break out of for loop
+    }
+    else if (inputt == 'n') {
+
+      char * i;
+      EEPROM.write(0, *currScalingFactor);
+
+
+      Serial.println(EEPROM.read(0));
+
+      wait_for_response = FALSE; //will break out of for loop
+    }
+  }
+  //else starting measuring
+
+
+
+
 }
 
 
@@ -120,6 +169,7 @@ void loop() {
   
   prevRead = currRead;
   currRead = scale.read();
+<<<<<<< HEAD
 
   //scaleAvg = scale.get_units(5);
   //delay(30);
@@ -139,17 +189,28 @@ void loop() {
   //Serial.println(currRead);
   //diff = abs(currRead.runningAverage - prevRead.runningAverage);
 
+
+  diff = abs(currRead - prevRead);
+
   
   //check for button push event
   if( Serial.available() ){
     if(Serial.read() == 'x')
       event = event_s.BUTTON_CALIBRATE;
   }
+
 //  else if(diff>100){
 //    event = event_s.WEIGHT_ON;
 //  }
 //  else
 //    event = event_s.NOTHING;
+
+  else if(diff>100){
+    event = event_s.WEIGHT_ON;
+  }
+  else
+    event = event_s.NOTHING;
+
 
   
 
@@ -178,6 +239,7 @@ void loop() {
       break;
 
     case WEIGHING:
+
       currWeight = round(scale.get_units(10));
       //Serial.println("In Weight on State");
       Serial.print("Current Weight in g = \t");
@@ -194,6 +256,12 @@ void loop() {
         state = WEIGHING;
       delay(330);
       prevWeight = currWeight;
+
+      Serial.println("In Weight on State");
+      Serial.print("The Weight in g = \t");
+      Serial.println(scale.get_units(10),1);
+      state = WAITING;
+
       break;
   
   }//end of switch statement
@@ -279,7 +347,9 @@ void calibrate() {
 
 
   xx = scale.get_units(10);
+
   Serial.print("Get Units value = \t");Serial.println(xx);
+
 
   input = ' ';
   Serial.println("Remove the weight then press 'x'");
@@ -287,10 +357,17 @@ void calibrate() {
     input = Serial.read();
   }
 
+
   ooh = xx / 5.0;
 
   Serial.print("current scaling factor is \t");
   Serial.println(ooh);
+
+  float ooh = xx / 5;
+
+  Serial.print("current scaling factor is \t");
+  Serial.println((float) ooh);
+
 
   scale.set_scale(ooh);
   scale.tare();

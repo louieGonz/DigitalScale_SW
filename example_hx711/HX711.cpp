@@ -2,9 +2,26 @@
 #include <HX711.h>
 #include "FastRunningMedian.h"
 
+
 unsigned int value = 0;
 
 FastRunningMedian<long, 10, 0> newMedian;
+
+
+
+unsigned int value = 0;
+
+FastRunningMedian<unsigned int, 10, 0> newMedian;
+
+
+
+
+typedef struct {
+
+
+
+} scale_vars;
+
 
 SensorData sensordata;
 
@@ -104,12 +121,13 @@ long HX711::read() {
   return static_cast<long>(++value);
 }
 
-long HX711::read_average(byte times) {
+SensorData HX711::read_average(byte times) {
   long sum = 0;
   long read_out = 0;
   SensorData sensordata;
   for (byte i = 0; i < times; i++) {
     read_out = read();
+
     //sum += read_out;
     newMedian.addValue(read_out);
 
@@ -133,6 +151,23 @@ double HX711::get_value(byte times) {
   //return that - OFFSET;
   
   return read_average(times) - OFFSET;
+
+    sum += read_out;
+    newMedian.addValue(read_out);
+
+  }
+  sensordata.runningMedian = (newMedian.getMedian() - OFFSET);
+  sensordata.runningMedian = sensordata.runningMedian / SCALE;
+  
+  Serial.print("~~~");Serial.print(sensordata.runningMedian);Serial.print("~~~\t");
+        sensordata.runningAverage = sum /times;
+        return sensordata;
+        //return sum / times;
+}
+
+double HX711::get_value(byte times) {
+  return (read_average(times)).runningAverage - OFFSET;
+
 }
 
 float HX711::get_units(byte times) {
@@ -141,7 +176,7 @@ float HX711::get_units(byte times) {
 
 
 void HX711::tare(byte times) {
-  double sum = read_average(times);
+  double sum = (read_average(times)).runningAverage;
   set_offset(sum);
 }
 
@@ -149,24 +184,24 @@ void HX711::set_scale(float scale) {
   SCALE = scale;
 }
 
-float HX711::get_scale() {
+  float HX711::get_scale() {
   return SCALE;
 }
 
-void HX711::set_offset(long offset) {
+  void HX711::set_offset(long offset) {
   OFFSET = offset;
 }
 
-long HX711::get_offset() {
+  long HX711::get_offset() {
   return OFFSET;
 }
 
-void HX711::power_down() {
+  void HX711::power_down() {
   digitalWrite(PD_SCK, LOW);
   digitalWrite(PD_SCK, HIGH);
 }
 
-void HX711::power_up() {
+  void HX711::power_up() {
   digitalWrite(PD_SCK, LOW);
 }
 

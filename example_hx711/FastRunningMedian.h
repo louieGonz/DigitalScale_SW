@@ -48,6 +48,7 @@ public:
 		return _sortbuffer[_median_ptr];
 	}
 
+
  T getMedianAverage(){
   T sum = _sortbuffer[_median_ptr] + _sortbuffer[_median_ptr-1] + _sortbuffer[_median_ptr+1];
   //Serial.println((T)_sortbuffer[_median_ptr]);
@@ -58,6 +59,7 @@ public:
   //Serial.print("Median Average is   ");Serial.println(avg);
   return avg;
  }
+
 
 	
 	void addValue(T new_value) {
