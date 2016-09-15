@@ -7,6 +7,11 @@
 #include "WProgram.h"
 #endif
 
+typedef struct SensorDatas{
+      long runningAverage;
+      long runningMedian;
+ }SensorData;
+
 class HX711
 {
   private:
@@ -15,6 +20,7 @@ class HX711
     byte GAIN;    // amplification factor
     long OFFSET;  // used for tare weight
     float SCALE;  // used to return weight in grams, kg, ounces, whatever
+    
 
   public:
     
@@ -38,9 +44,11 @@ class HX711
 
     // waits for the chip to be ready and returns a reading
     long read();
-
+    
     long raw_dout;
     // returns an average reading; times = how many times to read
+    //long read_average(byte times = 10);
+
     long read_average(byte times = 10);
 
     // returns (read_average() - OFFSET), that is the current value without the tare weight; times = how many readings to do
