@@ -8,6 +8,7 @@
 
 #define FALSE 0
 #define TRUE 1
+#define BUF_QUICK_CHECK 2 //used to do quick check on weight 
 
 
 enum States{
@@ -39,7 +40,14 @@ HX711 scale(A1, A0);    // parameter "gain" is ommited; the default value 128 is
 dcMotors motorA(2,3,9);
 
 
-//function prototype
+//Global Declaration
+//
+static volatile unsigned char state = idle; //starting state is idle
+static volatile unsigned char event = 0;
+static float currWeight=0;
+static float prevWeight=0;
+static float v_weight=0;
+
 SensorData scaleAvg, scaleAvg2;
 unsigned char serial_in= ' ';
 int diff = 0;
@@ -50,12 +58,10 @@ unsigned char byte3;
 int wait_for_response;
 char inputt;
 
-float currWeight=0;
-float prevWeight=0;
+
 Events event_s;
 States state_s;
-unsigned char state = idle; //starting state is idle
-unsigned char event = 0;
+
 float scalingFactor;
 int motorflag=0;
 unsigned long start_time=0,end_time=0;
@@ -89,10 +95,12 @@ char input_i = ' ';
 void loop() {
   //Event Checking
   
-   
+   //Update the Scale Reading/Weight
    currWeight = ( scale.get_units(RUNNING_MED_BUF_LEN) );
-   currWeight + 0.5f <= ceil(currWeight) ? currWeight=floor(currWeight) : currWeight=ceil(currWeight);
+   ( currWeight + 0.5f <= ceil(currWeight) ) ? currWeight=floor(currWeight) : currWeight=ceil(currWeight);
       
+   
+   //Event Checker
    if(prevWeight!=currWeight){
     Serial.println("Event Weight On");
     event = weight_on;
@@ -125,7 +133,21 @@ void loop() {
     /********************************************************/
     case WEIGHING:
     {
-       //start_time = millis();
+       
+      //initial state waiting for weight data
+      //when data found send to VERIFY
+      //get new wight and checks if same as currWeight
+      if(weight_verify(currWeight))
+        state = CLEAR_SCALE;
+      
+      else{
+        //need to check weight again
+        reWeigh = get_weight();
+        if(weight_verify(reWeight))
+          state = CLEAR_SCALE;
+      }  
+          
+      //start_time = millis();
        //currWeight = ( scale.get_units(RUNNING_MED_BUF_LEN) );
        //currWeight + 0.5f <= ceil(currWeight) ? currWeight=floor(currWeight) : currWeight=ceil(currWeight);
        //Serial.println(start_time);
@@ -149,19 +171,47 @@ void loop() {
      
     }
     /********************************************************/
-    case TRANSFERRING:
+    case VERIFYING:
     {
-       //Serial.println("Belt Moving");
-       motorA.motorAction(FORWARD,255);
-       if(event == weight_on){
-          start_time = millis();
-          state = WEIGHING;
-          //Serial.println("Transferring to Weighing"); 
-       }
-         //state = WEIGHING;
-        
-       break;
+      if(weight_verify(v_weight))
+        state = CLEAR_SCALE;
+
+      else 
+        state = WEIGHING;
+      
+      
     }
+    /********************************************************/
+//    case TRANSFERRING:
+//    {
+//       //Serial.println("Belt Moving");
+//       motorA.motorAction(FORWARD,255);
+//       if(event == weight_on){
+//          start_time = millis();
+//          state = WEIGHING;
+//          //Serial.println("Transferring to Weighing"); 
+//       }
+//         //state = WEIGHING;
+//        
+//       break;
+//    }
+
+    /********************************************************/
+    case CLEAR_SCALE:
+    {
+      //move berries of the scale
+      //until weight goes back to zero
+      //this is blocking
+
+      motorForward(); //starting sweeping by motor for x time
+
+      if(zero_weight_check())
+        state = CLEAR_SCALE; //if still need to clear
+      else
+        state = WAITING;
+   
+      break;
+   }
 
    
     break;
@@ -169,7 +219,7 @@ void loop() {
   prevWeight = currWeight;
 }
 /*******************************************************************************************/
-//Occurs when new data comes to hardware Rx 
+//Occurs when new data comes to hardware UART Rx 
 /*******************************************************************************************/
 void serialEvent(){
    if( Serial.available() ){
@@ -220,5 +270,33 @@ void toCalibrate(){
   Serial.println("Exiting Calibration");
 }
 
+
+unsigned char weight_verify(float comparingWeight){
+  
+  float newWeight;
+  
+  newWeight = ( scale.get_units(RUNNING_MED_BUF_LEN) );
+  newWeight + 0.5f <= ceil(newWeight) ? currWeight=floor(newWeight) : currWeight=ceil(newWeight);
+  if(newWeight==comparingWeight)
+    return 1;
+  else 
+    return -1;
+  
+   
+}
+
+float get_weight(){
+  float returnWeight;
+  returnWeight = ( scale.get_units(RUNNING_MED_BUF_LEN) );
+  returnWeight + 0.5f <= ceil(returnWeight) ? returnWeight=floor(returnWeight) : returnWeight=ceil(returnWeight); 
+
+  return returnWeight;
+}
+
+//will check is scale has nothing ie is zero
+unsigned char zero_weight_check(){
+  if(scale.get_units(BUF_QUICK_CHECK)) return 1;
+  else return -1;
+}
 
 
