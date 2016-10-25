@@ -234,11 +234,11 @@ void HX711::calibrate(){
   this->set_scale();
   this->tare();
 
-  Serial.println("place the weight on the scale, then press 'x' ");
+  Serial.println("place the weight on the scale, then press 'c' ");
   //wait until they place the weight then
 
   char input = ' ';
-  while (input != 'x') {
+  while (input != 'c') {
     input = Serial.read();
   }
 
@@ -247,8 +247,8 @@ void HX711::calibrate(){
   Serial.print("Get Units value = \t");Serial.println(xx);
 
   input = ' ';
-  Serial.println("Remove the weight then press 'x'");
-  while (input != 'x') {
+  Serial.println("Remove the weight then press 'c'");
+  while (input != 'c') {
     input = Serial.read();
   }
 

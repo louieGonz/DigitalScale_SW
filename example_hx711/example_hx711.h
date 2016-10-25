@@ -32,4 +32,4 @@ unsigned char weight_verify(float comparingWeight);
  * Arguement: NONE
  * Return: ! iff weight is zero, -1 if not zero
  */
-unsigned char zero_weight_check()
+unsigned char is_weight_zero()

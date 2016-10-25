@@ -2,6 +2,8 @@
 #include <EEPROM.h>
 #include <math.h>
 
+#include <Stepper.h>
+
 #include "HX711.h"
 #include "dcMotors.h"
 
@@ -16,7 +18,9 @@ enum States{
   WAITING,
   CALIBRATION,
   WEIGHING,
-  TRANSFERRING
+  TRANSFERRING,
+  RECHECK,
+  CLEAR_SCALE
 };
 
 
@@ -37,7 +41,12 @@ enum Events{
 char * currScalingFactor = "777"; //Nothing until init
 
 HX711 scale(A1, A0);    // parameter "gain" is ommited; the default value 128 is used by the library
-dcMotors motorA(2,3,9);
+dcMotors motorA(7,8,9);
+const int stepsPerRevolution = 200;  // change this to fit the number of steps per revolution
+                                     // for your motor
+
+// initialize the stepper library on pins 8 through 11:
+//Stepper myStepper(stepsPerRevolution, 8,9,10,11);     
 
 
 //Global Declaration
@@ -47,6 +56,7 @@ static volatile unsigned char event = 0;
 static float currWeight=0;
 static float prevWeight=0;
 static float v_weight=0;
+static unsigned char weighing_hold = FALSE;
 
 SensorData scaleAvg, scaleAvg2;
 unsigned char serial_in= ' ';
@@ -72,10 +82,14 @@ unsigned long start_time=0,end_time=0;
 
 void setup() {
   Serial.begin(38400);
+  // set the speed at 60 rpm:
+  //myStepper.setSpeed(60);
   Serial.println("Scale Demo");
   Serial.println("Do you want to calibrate 'y' or 'n");
   inputt = ' ';
   wait_for_response = TRUE;
+
+  
 
   toCalibrate();
 
@@ -94,7 +108,8 @@ char input_i = ' ';
 /*******************************************************************************************/
 void loop() {
   //Event Checking
-  
+  start_time = millis();
+   
    //Update the Scale Reading/Weight
    currWeight = ( scale.get_units(RUNNING_MED_BUF_LEN) );
    ( currWeight + 0.5f <= ceil(currWeight) ) ? currWeight=floor(currWeight) : currWeight=ceil(currWeight);
@@ -102,18 +117,30 @@ void loop() {
    
    //Event Checker
    if(prevWeight!=currWeight){
-    Serial.println("Event Weight On");
+    //Serial.println("Event Weight On");
     event = weight_on;
    }
-    
+   
+   /** Check for keyboard input *******************************************************/
+   if( Serial.available() ){
+    serial_in = Serial.read();
+    //Calibrate button
+    if(serial_in == 'x'){
+      Serial.println("Calibrate event");
+      scale.calibrate();
+      //event = event_s.BUTTON_CALIBRATE;
+    }
+   }
+  /********************************************************/ 
   
-  //state Machine
+   //state Machine
   switch (state){
     /********************************************************/
     case WAITING:
     {
+       Serial.println("~~~~Now Waiting~~~~~");
        if(event == weight_on){
-           Serial.println("~~~~~To Weight On state");
+           //Serial.println("~~~~~To Weight On state");
            state = WEIGHING;
        }
        else if(event == button_calibrate){
@@ -137,15 +164,7 @@ void loop() {
       //initial state waiting for weight data
       //when data found send to VERIFY
       //get new wight and checks if same as currWeight
-      if(weight_verify(currWeight))
-        state = CLEAR_SCALE;
       
-      else{
-        //need to check weight again
-        reWeigh = get_weight();
-        if(weight_verify(reWeight))
-          state = CLEAR_SCALE;
-      }  
           
       //start_time = millis();
        //currWeight = ( scale.get_units(RUNNING_MED_BUF_LEN) );
@@ -155,30 +174,47 @@ void loop() {
        //motorA.motorAction(FORWARD,0);//stop the motor
        //only print if the weight has changed
        //if(currWeight != prevWeight){
-       end_time = millis();
-       Serial.print("in g = \t");
-       Serial.println(currWeight,1);
+       //end_time = millis();
+       //Serial.print("in g = \t");
+       //Serial.println(currWeight,1);
        
-       Serial.print("delta time = ");
-       Serial.println(end_time - start_time);
+       //Serial.print("delta time = ");
+       //Serial.println(end_time - start_time);
          //prevWeight = currWeight;
        //}
        //else Serial.println("No Weight Change");
        //prevWeight=currWeight;
-       state = TRANSFERRING;
-       event = idle;
+
+       if(weight_verify(currWeight)){
+          state = CLEAR_SCALE;
+          Serial.print("Valid: in g = \t");
+          Serial.println(currWeight,1);
+       }
+       else{
+          //need to check weight again
+          //reWeigh = currWeight; //store the value 
+          //if(weight_verify(reWeight))
+          state = RECHECK;
+       }  
+       
        break;
      
     }
     /********************************************************/
-    case VERIFYING:
+    case RECHECK:
     {
-      if(weight_verify(v_weight))
+      //just move between weighing and recheck until valid weight
+      if(weight_verify(currWeight)){
+        //flag to wait until next berry for new weights
+        weighing_hold = TRUE;
         state = CLEAR_SCALE;
-
+        
+      }
+      
       else 
         state = WEIGHING;
-      
+
+      break;
       
     }
     /********************************************************/
@@ -199,16 +235,40 @@ void loop() {
     /********************************************************/
     case CLEAR_SCALE:
     {
+
+      //
+      //if(emergency_stop)
+      //  state=STOP;
       //move berries of the scale
       //until weight goes back to zero
       //this is blocking
-
-      motorForward(); //starting sweeping by motor for x time
-
-      if(zero_weight_check())
-        state = CLEAR_SCALE; //if still need to clear
-      else
+      //Serial.print("Valid: in g = \t");
+      //Serial.println(currWeight,1);
+      // step one revolution  in one direction:
+      //Serial.println("clockwise");
+      //myStepper.step(stepsPerRevolution);
+      motorA.motorAction(FORWARD,255);
+      //Serial.println("Weight is Valid");
+      //end_time = millis();
+      //Serial.print("delta time = ");
+      //Serial.println(end_time - start_time);
+      //Serial.println();
+      
+     
+      if(is_weight_zero()){
         state = WAITING;
+        end_time = millis();
+        Serial.print("delta time = ");
+        Serial.println(end_time - start_time);
+        Serial.println("Scale is now Clear");
+        Serial.println();
+        
+        motorA.motorAction(FORWARD,0);
+        
+      }
+        
+      
+        //motorA.motorAction(FORWARD,0);
    
       break;
    }
@@ -216,12 +276,14 @@ void loop() {
    
     break;
   }//end of switch statement
+  event=idle;//clear the event var
   prevWeight = currWeight;
 }
 /*******************************************************************************************/
 //Occurs when new data comes to hardware UART Rx 
 /*******************************************************************************************/
 void serialEvent(){
+  Serial.println("Serial Event");
    if( Serial.available() ){
     
     serial_in = Serial.read();
@@ -294,9 +356,15 @@ float get_weight(){
 }
 
 //will check is scale has nothing ie is zero
-unsigned char zero_weight_check(){
-  if(scale.get_units(BUF_QUICK_CHECK)) return 1;
-  else return -1;
+unsigned char is_weight_zero(){
+
+  float temp = scale.get_units(BUF_QUICK_CHECK);
+  if(temp<=0.0){
+    Serial.print("zero_weight_check val = ");
+    Serial.println(temp);
+    return TRUE;
+  }
+  else return FALSE;
 }
 
 
