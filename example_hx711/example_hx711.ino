@@ -116,7 +116,7 @@ void loop() {
       
    
    //Event Checker
-   if(prevWeight!=currWeight){
+   if(prevWeight!=currWeight && currWeight>0.0 ){
     //Serial.println("Event Weight On");
     event = weight_on;
    }
@@ -359,6 +359,10 @@ float get_weight(){
 unsigned char is_weight_zero(){
 
   float temp = scale.get_units(BUF_QUICK_CHECK);
+  
+  Serial.print("zero_weight_check val = ");
+  Serial.println(temp);
+  
   if(temp<=0.0){
     Serial.print("zero_weight_check val = ");
     Serial.println(temp);
