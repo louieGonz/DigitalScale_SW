@@ -254,6 +254,16 @@ void HX711::calibrate(){
 
   ooh = xx / 5.0;
 
+  
+  unsigned char data[sizeof(float)];
+  memcpy(data, &ooh, sizeof(ooh));  //memcpy ( *dest, *src, bytes)
+
+  //will store the calib num in non-volaite memory
+  EEPROM.write(data[ADDR]);
+  EEPROM.write(data[ADDR+1]);
+  EEPROM.write(data[ADDR+2]);
+  EEPROM.write(data[ADDR+3]);
+
   Serial.print("current scaling factor is \t");
   Serial.println(ooh);
 

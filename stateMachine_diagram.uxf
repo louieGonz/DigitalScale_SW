@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <diagram program="umlet" version="13.3">
-  <zoom_level>10</zoom_level>
+  <zoom_level>6</zoom_level>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>120</x>
-      <y>150</y>
-      <w>210</w>
-      <h>70</h>
+      <x>96</x>
+      <y>162</y>
+      <w>126</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>IDLE
 --
@@ -18,10 +18,10 @@ OUT:</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>420</x>
-      <y>310</y>
-      <w>210</w>
-      <h>70</h>
+      <x>276</x>
+      <y>258</y>
+      <w>126</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>WEIGHING
 --
@@ -33,10 +33,10 @@ OUT: weight_verify()
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>80</x>
-      <y>50</y>
-      <w>90</w>
-      <h>110</h>
+      <x>72</x>
+      <y>102</y>
+      <w>54</w>
+      <h>66</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;.</panel_attributes>
     <additional_attributes>70.0;90.0;10.0;10.0</additional_attributes>
@@ -44,10 +44,10 @@ OUT: weight_verify()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>580</x>
-      <y>540</y>
-      <w>210</w>
-      <h>70</h>
+      <x>372</x>
+      <y>396</y>
+      <w>126</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>RECHECK
 --
@@ -58,10 +58,10 @@ OUT: </panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>160</x>
-      <y>540</y>
-      <w>210</w>
-      <h>70</h>
+      <x>120</x>
+      <y>396</y>
+      <w>126</w>
+      <h>42</h>
     </coordinates>
     <panel_attributes>CLEAR_CALE
 --
@@ -72,10 +72,10 @@ OUT:motorStop()</panel_attributes>
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>0</x>
-      <y>30</y>
-      <w>90</w>
-      <h>40</h>
+      <x>24</x>
+      <y>90</y>
+      <w>54</w>
+      <h>24</h>
     </coordinates>
     <panel_attributes>initial state
 bg=blue</panel_attributes>
@@ -84,10 +84,10 @@ bg=blue</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>320</x>
-      <y>170</y>
-      <w>310</w>
-      <h>160</h>
+      <x>216</x>
+      <y>174</y>
+      <w>186</w>
+      <h>96</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -97,10 +97,10 @@ berry_detected</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>620</x>
-      <y>340</y>
-      <w>250</w>
-      <h>220</h>
+      <x>396</x>
+      <y>276</y>
+      <w>150</w>
+      <h>132</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -110,10 +110,10 @@ not_confirmed</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>240</x>
-      <y>340</y>
-      <w>200</w>
-      <h>220</h>
+      <x>168</x>
+      <y>276</y>
+      <w>120</w>
+      <h>132</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -123,10 +123,10 @@ verified</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>360</x>
-      <y>560</y>
-      <w>240</w>
-      <h>50</h>
+      <x>240</x>
+      <y>408</y>
+      <w>144</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -136,10 +136,10 @@ verified</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>50</x>
-      <y>540</y>
-      <w>130</w>
-      <h>80</h>
+      <x>54</x>
+      <y>396</y>
+      <w>78</w>
+      <h>48</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -151,10 +151,10 @@ not_clear_yet
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>130</x>
-      <y>210</y>
-      <w>120</w>
-      <h>350</h>
+      <x>102</x>
+      <y>198</y>
+      <w>72</w>
+      <h>210</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -164,10 +164,10 @@ berry_off_scale</panel_attributes>
   <element>
     <id>Relation</id>
     <coordinates>
-      <x>530</x>
-      <y>370</y>
-      <w>140</w>
-      <h>190</h>
+      <x>342</x>
+      <y>294</y>
+      <w>84</w>
+      <h>114</h>
     </coordinates>
     <panel_attributes>lt=&lt;-
 
@@ -179,10 +179,10 @@ not_confirmed
   <element>
     <id>UMLNote</id>
     <coordinates>
-      <x>400</x>
-      <y>0</y>
-      <w>350</w>
-      <h>50</h>
+      <x>264</x>
+      <y>72</y>
+      <w>210</w>
+      <h>30</h>
     </coordinates>
     <panel_attributes>State Machine
 halign=center
@@ -192,10 +192,10 @@ bg=yellow</panel_attributes>
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>910</x>
-      <y>30</y>
-      <w>210</w>
-      <h>300</h>
+      <x>570</x>
+      <y>90</y>
+      <w>126</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Event List
 --
@@ -218,10 +218,10 @@ then begin to weighing
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1280</x>
-      <y>430</y>
-      <w>210</w>
-      <h>300</h>
+      <x>792</x>
+      <y>330</y>
+      <w>126</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Clear Scale
 --
@@ -252,10 +252,10 @@ is_weight_zero()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>920</x>
-      <y>430</y>
-      <w>210</w>
-      <h>300</h>
+      <x>576</x>
+      <y>330</y>
+      <w>126</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Weighing
 --
@@ -282,10 +282,10 @@ get_weight()
   <element>
     <id>UMLClass</id>
     <coordinates>
-      <x>1270</x>
-      <y>30</y>
-      <w>210</w>
-      <h>300</h>
+      <x>786</x>
+      <y>90</y>
+      <w>126</w>
+      <h>180</h>
     </coordinates>
     <panel_attributes>Bugs
 --

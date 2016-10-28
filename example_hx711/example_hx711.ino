@@ -1,15 +1,14 @@
+
 #include <Time.h>
 #include <EEPROM.h>
 #include <math.h>
 
-#include <Stepper.h>
-
 #include "HX711.h"
 #include "dcMotors.h"
+#include "example_hx711.h"
 
 
-#define FALSE 0
-#define TRUE 1
+
 #define BUF_QUICK_CHECK 2 //used to do quick check on weight 
 
 
@@ -76,12 +75,21 @@ float scalingFactor;
 int motorflag=0;
 unsigned long start_time=0,end_time=0;
 
+const byte interruptPin = 2; //digital pin 2 is enabled to external interrupts
+
+
 
 
 /*****************************************************************************/
 
 void setup() {
   Serial.begin(38400);
+
+  attachInterrupt(2,IRCounter, HIGH);//interrupt responding to berry recieved
+  
+  //Timer1.initialize(5000000); //5s Oh Shit Timer.
+  //Timer1.attachInterrupt(backUpTimer);
+  
   // set the speed at 60 rpm:
   //myStepper.setSpeed(60);
   Serial.println("Scale Demo");
@@ -89,10 +97,24 @@ void setup() {
   inputt = ' ';
   wait_for_response = TRUE;
 
+  while(!Serial.available()){
+    
+  }//wait for input
+
+  inputt = Serial.read();
   
-
-  toCalibrate();
-
+  if(inputt=='y')
+    toCalibrate();
+  else{
+    float c_val;
+    c_val = readFlash();
+    Serial.print("Calibration weight uses is: ");
+    Serial.println(c_val);
+    
+  }
+  
+  //calib_num = readFlash(); //will read the stored calibration value
+  //toCalibrate();
   currWeight = round(scale.get_units(10));
   
   //starting state is
@@ -100,6 +122,22 @@ void setup() {
   state = WEIGHING;
 
 }
+/*******************************************************************************************/
+//ISR Timer1
+/*******************************************************************************************/
+void IRCounter(){
+  
+  Serial.print("----------------");
+  Serial.println(millis());
+  Serial.print("----------------");
+  
+}
+
+
+
+
+
+
 
 
 char input_i = ' ';
@@ -369,6 +407,22 @@ unsigned char is_weight_zero(){
     return TRUE;
   }
   else return FALSE;
+}
+
+
+float readFlash(){
+
+   float flo_val;
+   unsigned char dataRx[sizeof(float)];
+   
+   dataRx[0]=EEPROM.read(ADDR); 
+   dataRx[1]=EEPROM.read(ADDR+1); 
+   dataRx[2]=EEPROM.read(ADDR+2); 
+   dataRx[3]=EEPROM.read(ADDR+3);  
+  
+    memcpy(&flo_val,dataRx,sizeof(float));
+
+    return flo_val;
 }
 
 

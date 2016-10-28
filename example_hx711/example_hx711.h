@@ -3,14 +3,12 @@
 #include <math.h>
 
 #include "HX711.h"
-#include "dcMotors.h"
 
 
+#define ADDR 0
 #define FALSE 0
 #define TRUE 1
-#define WAITING 1
-#define CALIBRATION 2
-#define WEIGHING 3
+
 
 
 /* 
@@ -32,4 +30,13 @@ unsigned char weight_verify(float comparingWeight);
  * Arguement: NONE
  * Return: ! iff weight is zero, -1 if not zero
  */
-unsigned char is_weight_zero()
+unsigned char is_weight_zero();
+
+
+
+/*
+ * Summary: Will read flash, for previous calibration
+ * Arguement: NONE
+ * Return: the float value used in calibration
+ */
+float readFlash();
