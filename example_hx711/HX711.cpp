@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <HX711.h>
+#include <EEPROM.h>
 #include "FastRunningMedian.h"
+#include "example_hx711.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -243,7 +245,7 @@ void HX711::calibrate(){
   }
 
 
-  xx = this->get_units(50);
+  xx = this->get_units(50); 
   Serial.print("Get Units value = \t");Serial.println(xx);
 
   input = ' ';
@@ -259,10 +261,11 @@ void HX711::calibrate(){
   memcpy(data, &ooh, sizeof(ooh));  //memcpy ( *dest, *src, bytes)
 
   //will store the calib num in non-volaite memory
-  EEPROM.write(data[ADDR]);
-  EEPROM.write(data[ADDR+1]);
-  EEPROM.write(data[ADDR+2]);
-  EEPROM.write(data[ADDR+3]);
+  //everytime calibrate update the stored value
+  EEPROM.write(ADDR,data[ADDR]);
+  EEPROM.write(ADDR+1,data[ADDR+1]);
+  EEPROM.write(ADDR+2,data[ADDR+2]);
+  EEPROM.write(ADDR+3,data[ADDR+3]);
 
   Serial.print("current scaling factor is \t");
   Serial.println(ooh);

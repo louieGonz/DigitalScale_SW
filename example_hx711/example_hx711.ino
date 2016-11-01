@@ -85,7 +85,7 @@ const byte interruptPin = 2; //digital pin 2 is enabled to external interrupts
 void setup() {
   Serial.begin(38400);
 
-  attachInterrupt(2,IRCounter, HIGH);//interrupt responding to berry recieved
+  //attachInterrupt(2,IRCounter, HIGH);//interrupt responding to berry recieved
   
   //Timer1.initialize(5000000); //5s Oh Shit Timer.
   //Timer1.attachInterrupt(backUpTimer);
@@ -93,6 +93,11 @@ void setup() {
   // set the speed at 60 rpm:
   //myStepper.setSpeed(60);
   Serial.println("Scale Demo");
+  Serial.print("Last saved Calibration val = ");
+  float c_val;
+  c_val = readFlash();
+  Serial.println(c_val);
+  
   Serial.println("Do you want to calibrate 'y' or 'n");
   inputt = ' ';
   wait_for_response = TRUE;
@@ -101,8 +106,8 @@ void setup() {
     
   }//wait for input
 
-  inputt = Serial.read();
-  
+  //inputt = Serial.read();
+  inputt=Serial.read();
   if(inputt=='y')
     toCalibrate();
   else{
@@ -110,6 +115,9 @@ void setup() {
     c_val = readFlash();
     Serial.print("Calibration weight uses is: ");
     Serial.println(c_val);
+    
+    scale.set_scale(c_val);
+    scale.tare();
     
   }
   
@@ -127,9 +135,7 @@ void setup() {
 /*******************************************************************************************/
 void IRCounter(){
   
-  Serial.print("----------------");
-  Serial.println(millis());
-  Serial.print("----------------");
+
   
 }
 
@@ -401,7 +407,7 @@ unsigned char is_weight_zero(){
   Serial.print("zero_weight_check val = ");
   Serial.println(temp);
   
-  if(temp<=0.0){
+  if(temp<0.5f){
     Serial.print("zero_weight_check val = ");
     Serial.println(temp);
     return TRUE;

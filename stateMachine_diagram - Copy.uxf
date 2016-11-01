@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.3">
+  <zoom_level>6</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>72</x>
+      <y>162</y>
+      <w>126</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>IDLE
+--
+IN:
+OUT:</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>252</x>
+      <y>258</y>
+      <w>126</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>WEIGHING
+--
+IN: 
+OUT: 
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>48</x>
+      <y>102</y>
+      <w>54</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>70.0;90.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>348</x>
+      <y>396</y>
+      <w>126</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>RECHECK
+--
+IN: 
+OUT: </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>96</x>
+      <y>396</y>
+      <w>126</w>
+      <h>42</h>
+    </coordinates>
+    <panel_attributes>CLEAR_CALE
+--
+IN:
+OUT:</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>0</x>
+      <y>90</y>
+      <w>54</w>
+      <h>24</h>
+    </coordinates>
+    <panel_attributes>initial state
+bg=blue</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>192</x>
+      <y>174</y>
+      <w>186</w>
+      <h>96</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+berry_detected</panel_attributes>
+    <additional_attributes>220.0;140.0;180.0;10.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>372</x>
+      <y>276</y>
+      <w>150</w>
+      <h>132</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+not_confirmed</panel_attributes>
+    <additional_attributes>140.0;200.0;140.0;80.0;10.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>144</x>
+      <y>276</y>
+      <w>120</w>
+      <h>132</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+verified</panel_attributes>
+    <additional_attributes>10.0;200.0;10.0;50.0;180.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>216</x>
+      <y>408</y>
+      <w>144</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+verified</panel_attributes>
+    <additional_attributes>10.0;20.0;220.0;20.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>30</x>
+      <y>396</y>
+      <w>78</w>
+      <h>48</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+not_clear_yet
+
+</panel_attributes>
+    <additional_attributes>110.0;60.0;10.0;60.0;10.0;10.0;110.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>78</x>
+      <y>198</y>
+      <w>72</w>
+      <h>210</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+berry_off_scale</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;180.0;60.0;330.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>354</x>
+      <y>342</y>
+      <w>72</w>
+      <h>66</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;-
+
+not_confirmed
+
+</panel_attributes>
+    <additional_attributes>100.0;90.0;100.0;20.0;10.0;20.0;10.0;90.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLNote</id>
+    <coordinates>
+      <x>240</x>
+      <y>72</y>
+      <w>210</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>State Machine
+halign=center
+bg=yellow</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>546</x>
+      <y>90</y>
+      <w>126</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Event List
+--
+*berry_detected*
+--Will use IR to detect a new berry, 
+then begin to weighing
+
+*E-Stop*
+--Button push to halt system
+
+*calibrate*
+--User input to re-calibrate cale
+
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>768</x>
+      <y>330</y>
+      <w>126</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Clear Scale
+--
+*Summary:*
+In this state the berry is verified
+now we intiate motors to clear
+the scale platform.
+
+*Extras:*
+--if weight never gets zeroed?
+what should be done? (tare =&gt;
+cont?, wait for repair?)
+
+*Functions Used:*
+is_weight_zero()
+
+*In:*
+
+*Out:*
+
+
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>552</x>
+      <y>330</y>
+      <w>126</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Weighing
+--
+*Summary:*
+Begin taking reading from scale
+Attempt to verify weight.
+
+
+*Functions Used:*
+weight_verify()
+get_weight()
+
+*In:*
+
+*Out:*
+
+
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>762</x>
+      <y>90</y>
+      <w>126</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>Bugs
+--
+-Sometimes zero is not true and
+will hang. (soln: timer reset
+if run out, note user got a jam)
+
+
+
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>
