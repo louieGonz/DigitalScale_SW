@@ -1,28 +1,19 @@
 
 //
 // Released to the public domain
+// from https://github.com/robotican/lizi_robot/blob/master/lizi_arduino/Arduino/libraries/FastRunningMedian/FastRunningMedian.h
 //
-// Remarks:
-// This is a lean but fast version. 
-// Initially, the buffer is filled with a "default_value". To get real median values
-// you have to fill the object with N values, where N is the size of the sliding window.
-// For example: for(int i=0; i < 32; i++) myMedian.addValue(readSensor());
-// 
-// Constructor: 
-// FastRunningMedian<datatype_of_content, size_of_sliding_window, default_value> 
-// maximim size_of_sliding_window is 255
-// Methods:
-// addValue(val) adds a new value to the buffers (and kicks the oldest)
-// getMedian() returns the current median value
+//Notes:
+//Changes done by Luis Gonzalez, for scale accuracy
+//
+//getMedianAverage() retrives median plus the next and previous value 
+//and calcluated the average.
+//
+//The goal was to elminate outlying data that affects the average calculation
 //
 //
-// Usage: 
-// #include "FastRunningMedian.h"
-// FastRunningMedian<unsigned int,32, 0> myMedian;
-// ....
-// myMedian.addValue(value); // adds a value
-// m = myMedian.getMedian(); // retieves the median
-//
+
+
 
 #include <inttypes.h>
 
@@ -48,12 +39,14 @@ public:
 		return _sortbuffer[_median_ptr];
 	}
 
+ 
+ /*
+ 
+ Edits: Library Edit
+ 
+ */
  T getMedianAverage(){
   T sum = _sortbuffer[_median_ptr] + _sortbuffer[_median_ptr-1] + _sortbuffer[_median_ptr+1];
-  //Serial.println((T)_sortbuffer[_median_ptr]);
-  //Serial.println((T)_sortbuffer[_median_ptr-1]);
-  //Serial.println((T)_sortbuffer[_median_ptr+1]);
-  //Serial.println((T)(sum/3.0));
   T avg = sum/3;
   //Serial.print("Median Average is   ");Serial.println(avg);
   return avg;

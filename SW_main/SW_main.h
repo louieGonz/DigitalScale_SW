@@ -33,6 +33,15 @@ unsigned char weight_verify(float comparingWeight);
 unsigned char is_weight_zero();
 
 
+/*
+ * Summary: simplifies the calls needed to get a weight reading
+ * Arguement: the amount of samples to be taken
+ * Return: weight on the scale as a float
+ */
+float get_weight(int amount);
+
+
+
 
 /*
  * Summary: Will read flash, for previous calibration

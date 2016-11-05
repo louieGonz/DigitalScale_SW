@@ -2,7 +2,7 @@
 #include <HX711.h>
 #include <EEPROM.h>
 #include "FastRunningMedian.h"
-#include "example_hx711.h"
+#include "SW_main.h"
 
 #define FALSE 0
 #define TRUE 1
@@ -201,36 +201,6 @@ void HX711::calibrate(){
   int wait_for_veri = TRUE;
   int wait_for_input = TRUE;
   char input_ver = ' ';
-
-  //Serial.println("Enter the weight in grams of calibration weight: \t");
-  //wait until get input and is verified
-//  while (wait_for_input) {
-//
-//    if (Serial.available() > 0)
-//      calibWeight = Serial.parseFloat(); //read calibration weight
-//
-//    else if (calibWeight > 1 && calibWeight < 2000) {
-//      Serial.print("verify that weight entered is : \t");
-//      Serial.println((float)calibWeight);
-//
-//      while (wait_for_veri == TRUE) {
-//        if ( Serial.available() > 0) {
-//          input_ver = Serial.read();
-//        }
-//        if (input_ver == 'y') {
-//          wait_for_input = FALSE;
-//          wait_for_veri = FALSE;
-//        }
-//        else if (input_ver == 'n') {
-//          wait_for_input = TRUE; //exit while loop wait_for_input
-//          wait_for_veri = TRUE; //go while(wait for veri) to try entering again
-//        }
-//
-//      }//end of wait_for_input
-//    }//end of if
-//
-//  }//end of wait_for_veri
-
 
   //calling with no paramets or weights
   this->set_scale();
